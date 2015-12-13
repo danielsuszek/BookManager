@@ -1,11 +1,7 @@
-<html>
-  <head>
-    <title>Smarty</title>
-  </head>
-  <body>
+{extends file="layout.tpl"}
+{block name=title}My Page Title{/block}
+{block name=body}My HTML Page Body goes here
     Hello, {$name}!
     {ksiazka->tytul}
     {ksiazka->opis}
-    
-  </body>
-</html>
+{/block}

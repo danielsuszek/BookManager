@@ -1,8 +1,10 @@
 <?php
 class Controller {
     protected $_model;
+    protected $_smarty;
+    
     function __construct() {
-        $this->view = new View();
+        $this->_smarty = Loader::loadSmarty();       
     }
     
     public function runAction($action, Array $arg) {

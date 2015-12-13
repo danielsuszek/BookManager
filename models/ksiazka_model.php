@@ -16,6 +16,7 @@ class Ksiazka_Model extends Model
     
     function fillKsiazka($id)
     {
+       
         $this->_idKsiazka = $id;
         $sql = "SELECT * FROM ksiazka WHERE ksiazka.id_ksiazka = " . $this->_idKsiazka;
         $result = $this->_db->query($sql);

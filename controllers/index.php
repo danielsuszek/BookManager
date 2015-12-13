@@ -14,21 +14,16 @@ class Index extends Controller {
     function index() 
     {   
         $this->_autor_model->fillAutor(1);
-        $this->view->autor = $this->_autor_model;
         
-        $this->_ksiazka->fillKsiazka(1);
+        
+        $this->_ksiazka->fillKsiazka(2);
         $ksiazka = $this->_ksiazka;
         // var_dump($tytul);
         // echo $tytul;
         // $this->view->ksiazka = $this->_ksiazka_model;
         
         
-        $smarty = new Smarty;
-        // var_dump($smarty);
-        $smarty->setTemplateDir(APPLICATION_PATH . 'smarty/templates');
-        $smarty->setCompileDir(APPLICATION_PATH . 'smarty/templates_c');
-        $smarty->setCacheDir(APPLICATION_PATH . 'smarty/cache');
-        $smarty->setConfigDir(APPLICATION_PATH . 'smarty/configs');
+        $smarty = $this->_smarty;
         
         $smarty->registerObject('ksiazka',$ksiazka);
         $smarty->assign('name', 'Ned');

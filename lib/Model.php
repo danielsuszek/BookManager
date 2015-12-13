@@ -4,6 +4,8 @@ class Model {
     
     function __construct($id = null) {
         $this->_db = new Database();
+        $this->_db->query('SET NAMES utf8');
+        $this->_db->query('SET CHARACTER_SET utf8_unicode_ci');
     }
     public function __get($name) {
         // camelCase

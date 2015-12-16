@@ -17,15 +17,14 @@ class Ksiazka_Model extends Model
         parent::__construct();
     }
     
-    function fillKsiazka($id)
+    function findKsiazka($id)
     {
        
         $this->_idKsiazka = $id;
         $sql = "SELECT * FROM ksiazka WHERE ksiazka.id_ksiazka = " . $this->_idKsiazka;
         $result = $this->_db->query($sql);
         $data = $result->fetchAll();    
-        $data = $data[0];        
-        // print_r($data);
+        $data = $data[0];                
         
         $this->_tytul = $data['tytul'];
         $this->_isbn = $data['isbn'];
@@ -34,6 +33,8 @@ class Ksiazka_Model extends Model
         $this->_cenaNetto = $data['cena_netto'];
         $this->_cenaBrutto = $data['cena_brutto'];
         $this->_aktywna = $data['aktywna'];
+        
+        return $this;
     }
     
     function fillGatunki($idKsiazka)
@@ -45,14 +46,15 @@ class Ksiazka_Model extends Model
         $result = $this->_db->query($sql);
         $ids_gatunek = $result->fetchAll(PDO::FETCH_ASSOC);
         
-        foreach ($ids_gatunek as $id_gatunek) {
+        foreach ($ids_gatunek as $id_gatunek) {           
            $gatunek = Loader::loadModel('gatunek');
-           $id = $id_gatunek['id_gatunek'];
-           $gatunek->fillGatunek($id);
+           $id = $id_gatunek['id_gatunek'];           
+           $gatunek->findGatunek($id);
            
-           $this->_gatunki[] = $gatunek->getGatunek();
+           $this->_gatunki[] = $gatunek->getGatunek();            
         }
-
+        
+        return $this->_gatunki;
     }
     function getIdKsiazka()
     {

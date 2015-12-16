@@ -13,7 +13,7 @@ class Autor_Model extends Model
         parent::__construct();
     }
     
-    function fillAutor($id)
+    function findAutor($id)
     {        
         $this->_idAutor = $id;
         $sql = "SELECT * FROM autor WHERE autor.id_autor = " . $this->_idAutor;
@@ -28,6 +28,8 @@ class Autor_Model extends Model
         $this->_dataUr = $data['data_ur'];
         $this->_aktywny = $data['aktywny'];
         
+        return $this;
+        
     }
     function fillKsiazki($idAutor)
     {
@@ -38,10 +40,14 @@ class Autor_Model extends Model
         $result = $this->_db->query($sql);
         $ids_ksiazka = $result->fetchAll(PDO::FETCH_ASSOC);
         
+        
         foreach ($ids_ksiazka as $id_ksiazka) {
            $ksiazka = Loader::loadModel('ksiazka');            
-           $id = $id_ksiazka['id_ksiazka'];       
-           $ksiazka->fillKsiazka($id);
+           $id_ksiazka = $id_ksiazka['id_ksiazka'];       
+           $ksiazka->findKsiazka($id_ksiazka);
+           
+           $gatunki = $ksiazka->fillGatunki($id_ksiazka);
+           var_dump($gatunki);
            
            $this->_ksiazki[] = $ksiazka->getKsiazka();
         }
@@ -68,6 +74,12 @@ class Autor_Model extends Model
     {
         return $this->_aktywny;
     }
+    
+    function getKsiazki()
+    {
+        return $this->_ksiazki;
+    }
+    
     function getAutor()
     {
         return $this;

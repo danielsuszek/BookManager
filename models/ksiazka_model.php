@@ -9,6 +9,9 @@ class Ksiazka_Model extends Model
     private $_cenaNetto;
     private $_cenaBrutto;
     private $_aktywna;
+     
+    // kolekcja obiektów Gatunek
+    private $_gatunki = Array();
     
     function __construct() {
         parent::__construct();
@@ -31,6 +34,25 @@ class Ksiazka_Model extends Model
         $this->_cenaNetto = $data['cena_netto'];
         $this->_cenaBrutto = $data['cena_brutto'];
         $this->_aktywna = $data['aktywna'];
+    }
+    
+    function fillGatunki($idKsiazka)
+    {   
+        $sql = "SELECT gatunek.id_gatunek FROM gatunek "
+                ."JOIN ksiazka_gatunek ON "
+                . "gatunek.id_gatunek = ksiazka_gatunek.id_gatunek "
+                . "WHERE id_ksiazka = " . $idKsiazka;                        
+        $result = $this->_db->query($sql);
+        $ids_gatunek = $result->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($ids_gatunek as $id_gatunek) {
+           $gatunek = Loader::loadModel('gatunek');
+           $id = $id_gatunek['id_gatunek'];
+           $gatunek->fillGatunek($id);
+           
+           $this->_gatunki[] = $gatunek->getGatunek();
+        }
+
     }
     function getIdKsiazka()
     {

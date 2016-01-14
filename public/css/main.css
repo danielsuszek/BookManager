@@ -3,7 +3,7 @@ body {
 }
 h1 {
     padding: 15px;
-    color: red;
+    color: #000;
     text-align: center;
     
 }
@@ -12,4 +12,101 @@ h1 {
     border: 1px dotted #000;    
     width: 1400px;
     padding: 15px;
+}
+.bookAttr {    
+    color: #000;
+}
+table#books-list{
+    width: 1400px;
+    border-collapse: collapse;
+}
+table#books-list thead td {
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0;
+}
+table#books-list, tr, td {
+    border: 1px solid #000;
+    margin: 0;
+    padding: 10px;
+}
+thead td {
+    text-align: center;
+}
+col.author {
+    width: 350px;
+}
+col.genre{
+    width: 350px;
+}
+ul, li {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    padding: 0;
+    
+}
+div.author {
+    padding: 5px;
+    font-weight: bold;
+}
+div.book {
+    padding: 5px;
+    font-weight: bold;
+}
+div.otherInfo {
+    font-size:12px;
+    margin-left: 15px;
+}
+
+#otherAttr li {
+  list-style-type: none;
+  font-size: 12px;  
+}
+#byAuthor, #byTitle, #byGenre {
+    display: inline-block;
+}
+button {
+    margin: 15px;
+}
+a.button {
+    color: #000;
+    text-decoration: none;    
+    padding: 15px;
+    
+}
+form.inputForm label {
+    /* To make sure that all labels have the same size and are properly aligned */
+    display: inline-block;
+    width: 190px;
+    text-align: right;
+}
+form.inputForm input, textarea {
+    /* To make sure that all text fields have the same font settings
+       By default, textareas have a monospace font */    
+    margin: 10px;
+    /* To give the same size to all text field */
+    width: 300px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align:middle;
+    /* To harmonize the look & feel of text field border */
+    
+}
+form.inputForm textarea {
+    resize: none;
+}
+form.inputForm button {
+    margin-left: 250px;
+}
+form.inputForm input[type="checkbox"] {
+    margin-left: 0;
+    font-size: 30px;
+}
+input#active {    
+    margin-left: -130px;
+}
+form.deleteForm {
+    border: 1px;
+    display: inline-block;    
 }

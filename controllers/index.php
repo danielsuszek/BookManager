@@ -4,75 +4,83 @@ class Index extends Controller {
     function __construct() {
         parent::__construct();
         
-        // include model albums_model
-        /*
-        
-        $this->_book = Loader::loadModel('ksiazka');
+        // include models
+        $this->_authors = Loader::loadModel('authors');
         $this->_author = Loader::loadModel('author');
-         * 
-         */
-        $this->_genre = Loader::loadModel('genre');
-        
-        
-    }
-    function test()
-    {
-        $genre = $this->_genre;
-        
-        
-        
-        var_dump($genre);
+        $this->_books = Loader::loadModel('books');
+        $this->_book = Loader::loadModel('book');        
+        $this->_genre = Loader::loadModel('genre');                
     }
     function index() 
-    {   
-        /*
-        $autor = $this->_autor->findAutor(1);
-        $autor->fillKsiazki($autor->idAutor);   
-        var_dump($autor);
+    {                 
+        $smarty = $this->_smarty;        
+        $arrAuthorsForSmarty = '';        
+        $arrBooksForSmarty = '';
         
+        $authors = $this->_authors;        
+        $books = $this->_books;
         
-        var_dump($currBook);
-        */
-        /*
-        $gatunek = $this->_gatunek->findGatunek(1);
-        var_dump($gatunek);
-        */
-        /*
-        $ksiazka = $this->_ksiazka->findKsiazka(1);
-        $ksiazka->fillGatunki(1);
-        var_dump($ksiazka);
-        */
-        /*
-        $autor->fillKsiazki(1);                
+        $findMethod = (empty($_POST['findMethod'])) ?  '' : $_POST['findMethod'];      
         
-        $this->_gatunek->fillGatunek(2);
-        $gatunek = $this->_gatunek;
-        $this->_ksiazka->fillKsiazka(1);
-        $this->_ksiazka->fillGatunki(1);
+        if ($findMethod == 'author') {                                    
+            
+            $authorsByName = $authors->getAuthorsByName();     
+            if (is_array($authorsByName)) {
+                foreach ($authorsByName as $author) {        
+                    $arrAuthorsForSmarty[$author->idAuthor]['idAuthor']  = $author->idAuthor;
+                    $arrAuthorsForSmarty[$author->idAuthor]['name']      = $author->name;
+                    $arrAuthorsForSmarty[$author->idAuthor]['surname']   = $author->surname;
+                    $arrAuthorsForSmarty[$author->idAuthor]['birth']     = $author->birth;
+                    $arrAuthorsForSmarty[$author->idAuthor]['books']     = $author->arrBooks;       
+                }
+            $smarty->assign('books', ''); 
+            $smarty->assign('authors', $arrAuthorsForSmarty);   
+            $smarty->display('index.tpl');
+            } else {
+                $message = "Nie znaleziono autora";
+                $smarty->assign('message', $message);
+                $smarty->display('not_found.tpl');
+            }
+            
+        }
+        if ($findMethod == 'title') {
+            $booksByTitle = $books->getBooksByTitle();
+            //var_dump($booksByTitle);
+            if (is_array($booksByTitle)) {
+                foreach($booksByTitle as $book) {
+                    $arrBooksForSmarty[$book->idBook]['idBook'] = $book->idBook;
+                    $arrBooksForSmarty[$book->idBook]['title'] = $book->title;
+                    $arrBooksForSmarty[$book->idBook]['isbn'] = $book->isbn;
+                    $arrBooksForSmarty[$book->idBook]['pagesNr'] = $book->pagesNr;
+                    $arrBooksForSmarty[$book->idBook]['description'] = $book->description;
+                    $arrBooksForSmarty[$book->idBook]['priceNetto'] = $book->priceNetto;
+                    $arrBooksForSmarty[$book->idBook]['price'] = $book->price;
+                    $arrBooksForSmarty[$book->idBook]['active'] = $book->active;
+                                          
+                    $arrBooksForSmarty[$book->idBook]['authors'] = $book->arrForSmarty[$book->idBook]['authors'];   
+                    if (isset($book->arrForSmarty[$book->idBook]['genres'])) {
+                        $arrBooksForSmarty[$book->idBook]['genres'] = $book->arrForSmarty[$book->idBook]['genres'];                                        
+                    }
+                }
+                $smarty->assign('authors', '');  
+                $smarty->assign('books', $arrBooksForSmarty); 
+                $smarty->display('index.tpl');
+            } else {
+                $message = "Nie znaleziono tytułu";
+                $smarty->assign('message', $message);
+                $smarty->display('not_found.tpl');
+            }          
+        }  
+        if ($findMethod == 'genre') {
+            $message = "Przepraszamy, szukanie według gatunku na razie nie działa ...";
+            $smarty->assign('message', $message);
+            $smarty->display('not_found.tpl');
+        }
+        if ($findMethod == '') {
+            $smarty->assign('message', '');
+            $smarty->display('not_found.tpl');
+        }
         
-        $ksiazka = $this->_ksiazka;        
-         * 
-         */
-        //var_dump($ksiazka);
-        
-        // $this->view->ksiazka = $this->_ksiazka_model;
-        
-        /*
-        $smarty = $this->_smarty;
-        
-        $smarty->registerObject('ksiazka',$ksiazka);
-        $smarty->assign('name', 'Ned');
-        $smarty->display('index.tpl');
-         * 
-         */
-        /*
-        $this->view->model = $this->_model->getAlbums();               
-      
-        
-         $this->view->render('index/index', true);         
-         * 
-         */
     }
-    
 
 }

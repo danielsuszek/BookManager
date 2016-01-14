@@ -1,87 +1,163 @@
 <?php
-class Autor_Model extends Model 
+class Author_Model extends Model 
 {        
-    private $_idAutor;
-    private $_imie;
-    private $_nazwisko;
-    private $_dataUr;
-    private $_aktywny;
+    private $_idAuthor;
+    private $_name;
+    private $_surname;
+    private $_birth;
+    private $_active;
     
-    private $_ksiazki;
+    private $_books = Array();    
+    // Array() for Smarty
+    private $_arrBooks = Array();
     
     function __construct() {
         parent::__construct();
     }
     
-    function findAutor($id)
-    {        
-        $this->_idAutor = $id;
-        $sql = "SELECT * FROM autor WHERE autor.id_autor = " . $this->_idAutor;
+    function findAuthorById($id)
+    {                      
+        $sql = "SELECT * FROM autor WHERE autor.id_autor = " . $id;
+        
         $result = $this->_db->query($sql);
-        $data = $result->fetchAll();    
-        $data = $data[0];        
+        $data = $result->fetch(PDO::FETCH_ASSOC);    
                 
-        // print_r($data);
+        //print_r($data);
         
-        $this->_imie = $data['imie'];
-        $this->_nazwisko = $data['nazwisko'];
-        $this->_dataUr = $data['data_ur'];
-        $this->_aktywny = $data['aktywny'];
-        
+        $this->_idAuthor = $id;
+        $this->_name = $data['imie'];
+        $this->_surname = $data['nazwisko'];
+        $this->_birth = $data['data_ur'];
+        $this->_active = $data['aktywny'];
+                
         return $this;
         
-    }
-    function fillKsiazki($idAutor)
+    }      
+    function fillAuthorWithBooks($idAuthor)
     {
         $sql = "SELECT ksiazka.id_ksiazka FROM ksiazka "        
                 ."JOIN autor_ksiazka ON "
                 . "ksiazka.id_ksiazka = autor_ksiazka.id_ksiazka "
-                . "WHERE autor_ksiazka.id_autor = " . $idAutor;                        
+                . "WHERE autor_ksiazka.id_autor = " . $idAuthor .
+                " ORDER BY ksiazka.id_ksiazka DESC";
+                
         $result = $this->_db->query($sql);
-        $ids_ksiazka = $result->fetchAll(PDO::FETCH_ASSOC);
+        $ids_books = $result->fetchAll(PDO::FETCH_ASSOC);
         
-        
-        foreach ($ids_ksiazka as $id_ksiazka) {
-           $ksiazka = Loader::loadModel('ksiazka');            
-           $id_ksiazka = $id_ksiazka['id_ksiazka'];       
-           $ksiazka->findKsiazka($id_ksiazka);
+        foreach ($ids_books as $idBook) {
+           $book = Loader::loadModel('book');            
            
-           $gatunki = $ksiazka->fillGatunki($id_ksiazka);
-           var_dump($gatunki);
+           $idBook = $idBook['id_ksiazka'];                  
+           $book->findBookById($idBook);
+           $book->fillBookWithGenres($idBook);
+           $book->fillBookWithAuthors($idBook);
            
-           $this->_ksiazki[] = $ksiazka->getKsiazka();
+           $this->_books[$idBook] = $book->getBook();
         }
         
+        return $this->_books;
+    }
+    function prepareBooksArrayForSmarty($idAuthor)
+    {
+        $books = $this->_books;
+        foreach($books as $book) {            
+            $this->_arrBooks[$book->idBook] = array(
+                'idBook'        => $book->idBook,
+                'title'         => $book->title,
+                'isbn'          => $book->isbn,
+                'pagesNr'       => $book->pagesNr,
+                'description'   => $book->description,
+                'priceNetto'    => $book->priceNetto,
+                'price'         => $book->price,
+                'active'        => $book->active                
+            );
+            
+            $authors = $book->authors;
+            if (is_array($authors) && count($authors) > 0 ) {
+                $otherAuthors = array();
+                foreach ($authors as $author) {
+                    if ($author->idAuthor != $idAuthor) {
+                        $otherAuthors[$author->idAuthor]['idAuthor']    = $author->idAuthor;
+                        $otherAuthors[$author->idAuthor]['name']        = $author->name;
+                        $otherAuthors[$author->idAuthor]['surname']     = $author->surname;
+                        $otherAuthors[$author->idAuthor]['birth']       = $author->birth;
+                        $otherAuthors[$author->idAuthor]['active']      = $author->active;
+                    }
+                }
+                // var_dump($otherAuthors);
+                $this->_arrBooks[$book->idBook]['otherAuthors'] = $otherAuthors;
+            }
+        } // end foreach($books as $book)
+        
+        foreach($books as $book) {  
+            $bookGenres = $book->genres;
+            if (is_array($bookGenres) && count($bookGenres) > 0) {
+                $a = array();
+                foreach ($bookGenres as $genre) {
+                    $a[$genre->idGenre]['idGenre']     = $genre->idGenre;
+                    $a[$genre->idGenre]['name']        = $genre->name;
+                    $a[$genre->idGenre]['active']      = $genre->active;
+                
+                }
+        
+                $this->_arrBooks[$book->idBook]['genres'] = $a;
+            }            
+        }
+        
+        return $this->_arrBooks;
     }
     
-    function getIdAutor()
+    function getIdAuthor()
     {
-        return $this->_idAutor;
+        return $this->_idAuthor;
     }
-    function getImie()
+    function getName()
     {
-        return $this->_imie;
+        return $this->_name;
     }
-    function getNazwisko()
+    function getSurname()
     {
-        return $this->_nazwisko;
+        return $this->_surname;
     }
-    function getDataUr()
+    function getBirth()
     {
-        return $this->_dataUr;
+        return $this->_birth;
     }
-    function getAktywny()
+    function getActive()
     {
-        return $this->_aktywny;
+        return $this->_active;
     }
-    
-    function getKsiazki()
+    function getBooks()
     {
-        return $this->_ksiazki;
+        return $this->_books;
     }
-    
-    function getAutor()
+    function getArrBooks()
+    {
+        return $this->_arrBooks;
+    }
+    function getAuthor()
     {
         return $this;
+    }
+    
+    function setIdAuthor($idAuthor)
+    {
+        $this->_idAuthor = $idAuthor;
+    }
+    function setName($name)
+    {
+        $this->_name = $name;
+    }
+    function setSurname($surname)
+    {
+        $this->_surname = $surname;
+    }
+    function setBirth($birth)
+    {
+        $this->_birth = $birth;
+    }
+    function setActive($active)
+    {
+        $this->_active = $active;
     }
 }    
